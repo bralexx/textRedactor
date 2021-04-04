@@ -1,0 +1,3 @@
+Libraries:
+    curses (2-2-1 работает)
+    pyperclip (просто нужна)
