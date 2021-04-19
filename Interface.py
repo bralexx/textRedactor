@@ -1,85 +1,74 @@
 import curses
+import json
 from Editor import Editor
-
-
-def rawInput(scr, r, c, prompt_string):
-    curses.echo()
-    scr.addstr(r, c, prompt_string)
-    scr.refresh()
-    input = scr.getstr(r + 1, c, 20)
-    return input  # ^^^^  reading input at next line
+from Cursor import Cursor
 
 
 class Interface:
     path = []
     editors = []
-    numOfEditor = 0
+    num_of_editor = 0
 
     def __init__(self, pathList):
+        self.config = json.load(open("config.json", "r"))
         if len(pathList) == 0:
-            self.path.append("README")
-            self.editors.append(Editor("Readme.md"))
+            self.path.append("file")
+            self.editors.append(Editor("file"))
         for path_ in pathList:
             self.path.append(str(path_))
             self.editors.append(Editor(str(path_)))
 
     def draw(self, scr):
-        padRenderX = 0
-        padRenderY = 0
+        pad_render = Cursor(0, 0)
         key = 0
-        while (key != 5):
+        while key not in self.config['key_codes']['KEY_CTL_E']:
             scr.clear()
-            cursorY, cursorX = self.editors[self.numOfEditor].getCursor()
-            pad = self.editors[self.numOfEditor].renderPad()
-            maxY, maxX = scr.getmaxyx()
+            cursor = self.editors[self.num_of_editor].get_cursor()
+            pad = self.editors[self.num_of_editor].render_pad()
+            max_y, max_x = scr.getmaxyx()
             pad.keypad(True)
             scr.keypad(False)
             scr.leaveok(False)
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_WHITE)
 
-            MenuLine = "F1 Menu (soon) | "
-            scr.addstr(0, 0, MenuLine, curses.A_BOLD)
+            menu_line = "{} files opened | ".format(len(self.editors))
+            scr.addstr(0, 0, menu_line, curses.A_BOLD)
 
-            s1 = ""
-            for i in range(self.numOfEditor):
-                s1 += self.path[i] + ' | '
+            s1 = ' | '.join(self.path[0:self.num_of_editor])
+            if not len(s1) == 0:
+                s1+= ' | '
 
-            scr.addstr(0, len(MenuLine), s1)
-            if len(MenuLine) + len(s1) < maxX:
-                scr.addstr(0, len(MenuLine) + len(s1), self.path[self.numOfEditor], curses.A_REVERSE)
-            s2 = ""
-            for i in range(self.numOfEditor + 1, len(self.editors)):
-                s2 += ' | ' + self.path[i]
-            if len(MenuLine) + len(s1) + len(self.path[self.numOfEditor]) < maxX:
-                scr.addstr(0, len(MenuLine) + len(s1) + len(self.path[self.numOfEditor]), s2)
+            s2 = ' | '.join(self.path[self.num_of_editor + 1:len(self.editors)])
+            s2 = ' | ' + s2
+            if not len(s2) == 3:
+                s2 += ' | '
 
-            # scr.addstr(maxY - 1, 0, "Ctrl+E Exit | Ctrl+S Save | Ctrl+Q Close current file | Ctrl+Tab change current file |", curses.A_BOLD)
-            scr.addstr(maxY - 1, 0, "Last pressed key: " + str(key) + ' ' + str(curses.keyname(key)), curses.A_BOLD)
-            statusBarCursor = "Position: " + str(cursorX) + ':' + str(cursorY)
-            scr.addstr(maxY - 1, maxX - len(statusBarCursor) - 1, statusBarCursor, curses.A_BOLD)
+            scr.addstr(0, len(menu_line), s1)
+            if len(menu_line) + len(s1) < max_x:
+                scr.addstr(0, len(menu_line) + len(s1), self.path[self.num_of_editor], curses.A_REVERSE)
+                if len(menu_line) + len(s1) + len(self.path[self.num_of_editor]) < max_x:
+                    scr.addstr(0, len(menu_line) + len(s1) + len(self.path[self.num_of_editor]), s2)
 
-            if cursorX < padRenderX:
-                padRenderX = cursorX
-            if cursorX > padRenderX + maxX - 1:
-                padRenderX = cursorX - maxX + 1
-            if cursorY < padRenderY:
-                padRenderY = cursorY
-            if cursorY > padRenderY + maxY - 3:
-                padRenderY = cursorY - maxY + 3
+            scr.addstr(max_y - 1, 0, "Ctrl+E Exit | Ctrl+S Save | Ctrl+Q Close current file | Ctrl+Tab change current file |", curses.A_BOLD)
+            #scr.addstr(max_y - 1, 0, "Last pressed key: {} {}".format(str(key), str(curses.keyname(key))), curses.A_BOLD)
+            status_bar_cursor = "Position: {}:{}".format(str(cursor.x), str(cursor.y))
+            scr.addstr(max_y - 1, max_x - len(status_bar_cursor) - 1, status_bar_cursor, curses.A_BOLD)
+
+            pad_render = Cursor(min(cursor.x, pad_render.x), min(cursor.y, pad_render.y))
+            pad_render = Cursor(max(cursor.x - max_x + 1, pad_render.x), max(cursor.y - max_y + 3, pad_render.y))
+
             scr.refresh()
-            pad.refresh(padRenderY, padRenderX, 1, 0, maxY - 2, maxX - 1)
+            pad.refresh(pad_render.y, pad_render.x, 1, 0, max_y - 2, max_x - 1)
             key = pad.getch()
-            if key == 482:  # Ctrl+Tab
-                self.numOfEditor += 1
-                self.numOfEditor %= len(self.editors)
-            # elif key == 15: #Ctrl+O
-            # todo
-            elif key == 17:  # Ctrl+Q
-                self.editors.pop(self.numOfEditor)
-                self.path.pop(self.numOfEditor)
+            if key in self.config['key_codes']['KEY_CTL_TAB']:
+                self.num_of_editor += 1
+                self.num_of_editor %= len(self.editors)
+            elif key in self.config['key_codes']['KEY_CTL_Q']:
+                self.editors.pop(self.num_of_editor)
+                self.path.pop(self.num_of_editor)
                 if len(self.editors) == 0:
                     self.path.append("README")
                     self.editors.append(Editor("Readme.md"))
-                self.numOfEditor %= len(self.editors)
+                self.num_of_editor %= len(self.editors)
             else:
-                self.editors[self.numOfEditor].useKey(key)
+                self.editors[self.num_of_editor].use_key(key)

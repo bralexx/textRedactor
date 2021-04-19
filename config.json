@@ -1,0 +1,76 @@
+{
+  "key_codes" : {
+    "KEY_UP" : [
+      259,
+      547
+    ],
+    "KEY_DOWN" : [
+      258,
+      548
+    ],
+    "KEY_RIGHT" : [
+      261,
+      400
+    ],
+    "KEY_LEFT" : [
+      260,
+      391
+    ],
+    "KEY_END" : [
+      358,
+      384
+    ],
+    "KEY_HOME" : [
+      262,
+      388
+    ],
+    "KEY_CTL_RIGHT" : [
+      444
+    ],
+    "KEY_CTL_LEFT" : [
+      443
+    ],
+    "KEY_CTL_C" : [
+      3
+    ],
+    "KEY_CTL_V" : [
+      22
+    ],
+    "KEY_CTL_S" : [
+      19
+    ],
+    "KEY_CTL_Q" : [
+      17
+    ],
+    "KEY_CTL_E" : [
+      5
+    ],
+    "KEY_CTL_TAB" : [
+      482
+    ],
+    "KEY_ENTER" : [
+      10,
+      343
+    ],
+    "KEY_ENTER" : [
+      10,
+      343
+    ],
+    "KEY_BACKSPACE" : [
+      8,
+      263
+    ],
+    "KEY_CTL_BACKSPACE" : [
+      127
+    ]
+  },
+  "s_key_codes" : [
+    547,
+    548,
+    3,
+    400,
+    391,
+    388,
+    384
+  ]
+}

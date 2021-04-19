@@ -1,3 +1,2 @@
-Libraries:
-    curses (2-2-1 работает)
-    pyperclip (просто нужна)
+curses~=2.2.1+utf8
+pyperclip~=1.8.2

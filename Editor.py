@@ -1,213 +1,190 @@
 import curses
 import pyperclip
+import json
+from Cursor import Cursor
 
 
 class Editor:
-    padWidth = 1000
+    pad_width = 1000
     path = str
     content = []
-    cursorX = 0
-    cursorY = 0
-    selectionX = 0
-    selectionY = 0
-
-    def setSize(self):
-        maxStrLen = 1000
-        for str in self.content:
-            maxStrLen = max(maxStrLen, len(str))
-        self.padWidth = maxStrLen
+    cursor = Cursor(0, 0)
+    selection = Cursor(0, 0)
 
     def __init__(self, path_):
+        self.config = json.load(open("config.json", "r"))
         self.path = path_
         file = open(self.path, "r")
         self.content = (file.read()).split('\n')
         if len(self.content) == 0:
             self.content.append("")
-        self.setSize()
+        self.set_size()
 
-    def renderPad(self):
-        pad = curses.newpad(len(self.content), self.padWidth)
-        cursorX = self.cursorX
-        cursorY = self.cursorY
-        selectionX = self.selectionX
-        selectionY = self.selectionY
-        [selectionY, selectionX], [cursorY, cursorX] = \
-            min([selectionY, selectionX], [cursorY, cursorX]), max([selectionY, selectionX], [cursorY, cursorX])
-        for i in range(selectionY):
+    def set_size(self):
+        max_str_len = 1000
+        for s in self.content:
+            max_str_len = max(max_str_len, len(s))
+        self.pad_width = max_str_len
+
+    def render_pad(self):
+        pad = curses.newpad(len(self.content), self.pad_width)
+        cursor = self.cursor
+        selection = self.selection
+
+        selection, cursor = min(selection, cursor), max(selection, cursor)
+        for i in range(selection.y):
             pad.addstr(i, 0, self.content[i])
-        pad.addstr(selectionY, 0, self.content[selectionY][0:selectionX])
+        pad.addstr(selection.y, 0, self.content[selection.y][0:selection.x])
 
         pad.attron(curses.A_REVERSE)
-        if selectionY == cursorY:
-            if not selectionX == cursorX:
-                pad.addstr(selectionY, selectionX, self.content[selectionY][selectionX:cursorX])
+        if selection.y == cursor.y:
+            if not selection.x == cursor.x:
+                pad.addstr(selection.y, selection.x, self.content[selection.y][selection.x:cursor.x])
         else:
-            pad.addstr(selectionY, selectionX, self.content[selectionY][selectionX:len(self.content[selectionY])])
-            for i in range(selectionY + 1, cursorY):
+            pad.addstr(selection.y, selection.x, self.content[selection.y][selection.x:len(self.content[selection.y])])
+            for i in range(selection.y + 1, cursor.y):
                 pad.addstr(i, 0, self.content[i])
-            pad.addstr(cursorY, 0, self.content[cursorY][0:cursorX])
+            pad.addstr(cursor.y, 0, self.content[cursor.y][0:cursor.x])
         pad.attroff(curses.A_REVERSE)
 
-        pad.addstr(cursorY, cursorX, self.content[cursorY][cursorX:len(self.content[cursorY])])
-        for i in range(cursorY + 1, len(self.content)):
+        pad.addstr(cursor.y, cursor.x, self.content[cursor.y][cursor.x:len(self.content[cursor.y])])
+        for i in range(cursor.y + 1, len(self.content)):
             pad.addstr(i, 0, self.content[i])
-        pad.move(self.cursorY, self.cursorX)
+        pad.move(self.cursor.y, self.cursor.x)
         return pad
 
-    def getCursor(self):
-        return self.cursorY, self.cursorX
-
-    def paste(self, otherContent):
-        [startY, startX], [endY, endX] = min([self.selectionY, self.selectionX], [self.cursorY, self.cursorX]), \
-                                         max([self.selectionY, self.selectionX], [self.cursorY, self.cursorX])
-        self.cursorY = startY + len(otherContent) - 1
-        if len(otherContent) > 1:
-            self.cursorX = len(otherContent[len(otherContent) - 1])
-        else:
-            self.cursorX = startX + len(otherContent[len(otherContent) - 1])
-
-        otherContent[len(otherContent) - 1] += self.content[endY][endX:len(self.content[endY]) - 1]
-        for i in range(startY + 1, endY + 1):
-            self.content.pop(i)
-        self.content[startY] = self.content[startY][0:startX]
-        self.content[startY] += otherContent[0]
-        for i in range(1, len(otherContent)):
-            self.content.insert(startY + i, otherContent[i])
-        self.setSize()
-
-    def keyUp(self):
-        self.cursorY -= 1
-        self.cursorY = max(self.cursorY, 0)
-        self.cursorX = min(self.cursorX, len(self.content[self.cursorY]))
-
-    def keyDown(self):
-        self.cursorY += 1
-        self.cursorY = min(self.cursorY, len(self.content) - 1)
-        self.cursorX = min(self.cursorX, len(self.content[self.cursorY]))
+    def get_cursor(self):
+        return self.cursor
 
     def keyRight(self):
-        if self.cursorY == len(self.content) - 1 and self.cursorX == len(self.content[self.cursorY]):
+        if self.cursor.y == len(self.content) - 1 and self.cursor.x == len(self.content[self.cursor.y]):
             return
-        if not self.cursorY == len(self.content) - 1 and self.cursorX == len(self.content[self.cursorY]):
-            self.cursorY += 1
-            self.cursorX = 0
+        if not self.cursor.y == len(self.content) - 1 and self.cursor.x == len(self.content[self.cursor.y]):
+            self.cursor.y += 1
+            self.cursor.x = 0
         else:
-            self.cursorX += 1
-            self.cursorX = min(self.cursorX, len(self.content[self.cursorY]))
+            self.cursor.x += 1
+            self.cursor.x = min(self.cursor.x, len(self.content[self.cursor.y]))
 
     def keyLeft(self):
-        if not self.cursorY == 0 and self.cursorX == 0:
-            self.cursorY -= 1
-            self.cursorX = len(self.content[self.cursorY])
+        if not self.cursor.y == 0 and self.cursor.x == 0:
+            self.cursor.y -= 1
+            self.cursor.x = len(self.content[self.cursor.y])
         else:
-            self.cursorX -= 1
-            self.cursorX = max(self.cursorX, 0)
+            self.cursor.x -= 1
+            self.cursor.x = max(self.cursor.x, 0)
+
+    def paste(self, otherContent):
+        start, end = min(self.selection, self.cursor), max(self.selection, self.cursor)
+        self.cursor.y = start.y + len(otherContent) - 1
+        if len(otherContent) > 1:
+            self.cursor.x = len(otherContent[len(otherContent) - 1])
+        else:
+            self.cursor.x = start.x + len(otherContent[len(otherContent) - 1])
+
+        otherContent[len(otherContent) - 1] += self.content[end.y][end.x:len(self.content[end.y]) - 1]
+        for i in range(start.y + 1, end.y + 1):
+            self.content.pop(i)
+        self.content[start.y] = self.content[start.y][0:start.x]
+        self.content[start.y] += otherContent[0]
+        for i in range(1, len(otherContent)):
+            self.content.insert(start.y + i, otherContent[i])
+        self.set_size()
 
     def backspace(self):
-        if self.selectionX != self.cursorX or self.selectionY != self.cursorY:
+        if self.selection.x != self.cursor.x or self.selection.y != self.cursor.y:
             self.paste([""])
             return
-        if self.cursorX == 0:
-            if self.cursorY > 0:
-                self.cursorX = len(self.content[self.cursorY - 1])
-                self.content[self.cursorY - 1] += self.content[self.cursorY]
-                self.content.pop(self.cursorY)
-                self.cursorY -= 1
+        if self.cursor.x == 0:
+            if self.cursor.y > 0:
+                self.cursor.x = len(self.content[self.cursor.y - 1])
+                self.content[self.cursor.y - 1] += self.content[self.cursor.y]
+                self.content.pop(self.cursor.y)
+                self.cursor.y -= 1
         else:
-            self.content[self.cursorY] = self.content[self.cursorY][0:self.cursorX - 1] + \
-                                         self.content[self.cursorY][self.cursorX:len(self.content[self.cursorY])]
-            self.cursorX -= 1
-            self.cursorX = max(self.cursorX, 0)
-            self.selectionY, self.selectionX = self.cursorY, self.cursorX
+            self.content[self.cursor.y] = self.content[self.cursor.y][0:self.cursor.x - 1] + \
+                                          self.content[self.cursor.y][self.cursor.x:len(self.content[self.cursor.y])]
+            self.cursor.x -= 1
+            self.cursor.x = max(self.cursor.x, 0)
+            self.selection.y, self.selection.x = self.cursor.y, self.cursor.x
 
-    def ctrlC(self):
-        if self.cursorY == self.selectionY:
-            if self.cursorX == self.selectionX:
-                return
+    def use_key(self, key):
+
+        if key in self.config['key_codes']['KEY_UP']:
+            self.cursor.y -= 1
+            self.cursor = Cursor(max(self.cursor.y, 0), min(self.cursor.x, len(self.content[self.cursor.y])))
+        elif key in self.config['key_codes']['KEY_DOWN']:
+            self.cursor.y += 1
+            self.cursor.y = min(self.cursor.y, len(self.content) - 1)
+            self.cursor.x = min(self.cursor.x, len(self.content[self.cursor.y]))
+        elif key in self.config['key_codes']['KEY_RIGHT'] :
+            self.keyRight()
+        elif key in self.config['key_codes']['KEY_LEFT'] :
+            self.keyLeft()
+        elif key in self.config['key_codes']['KEY_END']:
+            self.cursor.x = len(self.content[self.cursor.y])
+        elif key in self.config['key_codes']['KEY_HOME']:
+            self.cursor.x = 0
+        elif key in self.config['key_codes']['KEY_CTL_RIGHT']:
+            while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][self.cursor.x] == ' ':
+                self.cursor.x += 1
+            self.keyRight()
+            while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
+                self.cursor.x] != ' ':
+                self.keyRight()
+        elif key in self.config['key_codes']['KEY_CTL_LEFT']:
+            while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] == ' ':
+                self.keyLeft()
+            self.keyLeft()
+            while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] != ' ':
+                self.keyLeft()
+        elif key in self.config['key_codes']['KEY_CTL_C']:
+            if self.cursor.y == self.selection.y:
+                if self.cursor.x == self.selection.x:
+                    return
+                else:
+                    pyperclip.copy(
+                        self.content[self.cursor.y][
+                        min(self.selection.x, self.cursor.x):max(self.selection.x, self.cursor.x)])
             else:
-                pyperclip.copy(
-                    self.content[self.cursorY][min(self.selectionX, self.cursorX):max(self.selectionX, self.cursorX)])
-        else:
-            [startY, startX], [endY, endX] = min([self.selectionY, self.selectionX], [self.cursorY, self.cursorX]), \
-                                             max([self.selectionY, self.selectionX], [self.cursorY, self.cursorX])
-            s = self.content[startY][startX:len(self.content[startY])] + '\n'
-            for i in range(startY + 1, endY):
-                s += self.content[i] + '\n'
-            s += self.content[endY][0:endY]
-            pyperclip.copy(s)
-
-    def ctrlRight(self):
-        while self.cursorX < len(self.content[self.cursorY]) and self.content[self.cursorY][self.cursorX] == ' ':
-            self.keyRight()
-        self.keyRight()
-        while self.cursorX < len(self.content[self.cursorY]) and self.content[self.cursorY][self.cursorX] != ' ':
-            self.keyRight()
-
-    def ctrlLeft(self):
-        while self.cursorX > 0 and self.content[self.cursorY][self.cursorX - 1] == ' ':
-            self.keyLeft()
-        self.keyLeft()
-        while self.cursorX > 0 and self.content[self.cursorY][self.cursorX - 1] != ' ':
-            self.keyLeft()
-
-    def ctrlBackSpace(self):
-        while self.cursorX > 0 and self.content[self.cursorY][self.cursorX - 1] == ' ':
-            self.backspace()
-        self.backspace()
-        while self.cursorX > 0 and self.content[self.cursorY][self.cursorX - 1] != ' ':
-            self.backspace()
-        self.backspace()
-
-    def useKey(self, key):
-
-        if key == curses.KEY_UP or key == 547:
-            self.keyUp()
-        elif key == curses.KEY_DOWN or key == 548:
-            self.keyDown()
-        elif key == curses.KEY_RIGHT or key == curses.KEY_SRIGHT:
-            self.keyRight()
-        elif key == curses.KEY_END or key == curses.KEY_SEND:
-            self.cursorX = len(self.content[self.cursorY])
-        elif key == curses.KEY_HOME or key == curses.KEY_SHOME:
-            self.cursorX = 0
-        elif key == 444:  # Ctrl + Right
-            self.ctrlRight()
-        elif key == curses.KEY_LEFT or key == curses.KEY_SLEFT:
-            self.keyLeft()
-        elif key == 443:  # Ctrl + Left
-            self.ctrlLeft()
-        elif key == 3:  # Ctrl + C
-            self.ctrlC()
-        elif key == 22:  # Ctrl + V
+                start, end = min(self.selection, self.cursor), max(self.selection, self.cursor)
+                s = '\n'.join([self.content[start.y][start.x:len(self.content[start.y])],
+                               '\n'.join(self.content[start.y + 1:end.y]), self.content[end.y][0:end.x]])
+                pyperclip.copy(s)
+        elif key in self.config['key_codes']['KEY_CTL_V']:
             self.paste((str(pyperclip.paste())).split('\n'))
-        elif key == 19:  # Ctrl + S
+        elif key in self.config['key_codes']['KEY_CTL_V']:
             file = open(self.path, 'w')
             for s in self.content:
                 file.write(s)
                 file.write('\n')
-        elif key == 10 or key == curses.KEY_ENTER:
-            self.content.insert(self.cursorY + 1,
-                                self.content[self.cursorY][self.cursorX:len(self.content[self.cursorY])])
-            self.content[self.cursorY] = self.content[self.cursorY][0:self.cursorX]
-            self.cursorY += 1
-            self.cursorX = 0
+        elif key in self.config['key_codes']['KEY_ENTER']:
+            self.content.insert(self.cursor.y + 1,
+                                self.content[self.cursor.y][self.cursor.x:len(self.content[self.cursor.y])])
+            self.content[self.cursor.y] = self.content[self.cursor.y][0:self.cursor.x]
+            self.cursor.y += 1
+            self.cursor.x = 0
         elif key == curses.KEY_RESIZE:
             return
-        elif key == 8 or key == curses.KEY_BACKSPACE:
+        elif key in self.config['key_codes']['KEY_BACKSPACE']:
             self.backspace()
-        elif key == 127:
-            self.ctrlBackSpace()
+        elif key in self.config['key_codes']['KEY_CTL_BACKSPACE']:
+            while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] == ' ':
+                self.backspace()
+            self.backspace()
+            while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] != ' ':
+                self.backspace()
+            self.backspace()
         elif key in range(curses.KEY_F0, curses.KEY_F12):  # F1 - F12
             return
-        elif key in range(32, 127) and (chr(key).isprintable() or chr(key).isdigit() or key == 32 or chr(key) == ' '):
-            if self.cursorY == self.selectionY and self.cursorX == self.selectionX:
-                self.content[self.cursorY] = self.content[self.cursorY][0:self.cursorX] + chr(key) + \
-                                             self.content[self.cursorY][self.cursorX:len(self.content[self.cursorY])]
-                self.cursorX += 1
+        elif key in range(32, 127):
+            if self.cursor == self.selection:
+                self.content[self.cursor.y] = self.content[self.cursor.y][0:self.cursor.x] + chr(key) + \
+                                              self.content[self.cursor.y][self.cursor.x:len(self.content[self.cursor.y])]
+                self.cursor.x += 1
             else:
                 self.paste([str(chr(key))])
-            self.selectionY, self.selectionX = self.cursorY, self.cursorX
+            self.selection.y, self.selection.x = self.cursor.y, self.cursor.x
 
-        if not (key == 547 or key == 548 or key == curses.KEY_SRIGHT or key == curses.KEY_SLEFT or key == 3 or
-                key == curses.KEY_SHOME or key == curses.KEY_SEND):
-            self.selectionY, self.selectionX = self.cursorY, self.cursorX
+        if not key in self.config['s_key_codes']:
+            self.selection.y, self.selection.x = self.cursor.y, self.cursor.x
