@@ -22,11 +22,12 @@ class Interface:
         pad_render = Cursor(0, 0)
         key = 0
         while key not in self.config['key_codes']['KEY_CTL_E']:
-            scr.clear()
+            #scr.clear()
             cursor = self.editors[self.num_of_editor].get_cursor()
             pad = self.editors[self.num_of_editor].render_pad()
             max_y, max_x = scr.getmaxyx()
             pad.keypad(True)
+            #pad.nodelay(1)
             scr.keypad(False)
             scr.leaveok(False)
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_WHITE)
