@@ -1,6 +1,7 @@
 class Cursor:
     x = 0
     y = 0
+
     def __init__(self, y_, x_):
         self.x = x_
         self.y = y_

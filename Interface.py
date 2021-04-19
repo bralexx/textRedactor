@@ -22,12 +22,11 @@ class Interface:
         pad_render = Cursor(0, 0)
         key = 0
         while key not in self.config['key_codes']['KEY_CTL_E']:
-            #scr.clear()
+            scr.clear()
             cursor = self.editors[self.num_of_editor].get_cursor()
             pad = self.editors[self.num_of_editor].render_pad()
             max_y, max_x = scr.getmaxyx()
             pad.keypad(True)
-            #pad.nodelay(1)
             scr.keypad(False)
             scr.leaveok(False)
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_WHITE)
@@ -37,7 +36,7 @@ class Interface:
 
             s1 = ' | '.join(self.path[0:self.num_of_editor])
             if not len(s1) == 0:
-                s1+= ' | '
+                s1 += ' | '
 
             s2 = ' | '.join(self.path[self.num_of_editor + 1:len(self.editors)])
             s2 = ' | ' + s2
@@ -50,8 +49,10 @@ class Interface:
                 if len(menu_line) + len(s1) + len(self.path[self.num_of_editor]) < max_x:
                     scr.addstr(0, len(menu_line) + len(s1) + len(self.path[self.num_of_editor]), s2)
 
-            scr.addstr(max_y - 1, 0, "Ctrl+E Exit | Ctrl+S Save | Ctrl+Q Close current file | Ctrl+Tab change current file |", curses.A_BOLD)
-            #scr.addstr(max_y - 1, 0, "Last pressed key: {} {}".format(str(key), str(curses.keyname(key))), curses.A_BOLD)
+            scr.addstr(max_y - 1, 0,
+                       "Ctrl+E Exit | Ctrl+S Save | Ctrl+Q Close current file | Ctrl+Tab change current file |",
+                       curses.A_BOLD)
+            # scr.addstr(max_y - 1, 0, "Last pressed key: {} {}".format(str(key), str(curses.keyname(key))), curses.A_BOLD)
             status_bar_cursor = "Position: {}:{}".format(str(cursor.x), str(cursor.y))
             scr.addstr(max_y - 1, max_x - len(status_bar_cursor) - 1, status_bar_cursor, curses.A_BOLD)
 
@@ -68,8 +69,8 @@ class Interface:
                 self.editors.pop(self.num_of_editor)
                 self.path.pop(self.num_of_editor)
                 if len(self.editors) == 0:
-                    self.path.append("README")
-                    self.editors.append(Editor("Readme.md"))
+                    self.path.append("file")
+                    self.editors.append(Editor("file"))
                 self.num_of_editor %= len(self.editors)
             else:
                 self.editors[self.num_of_editor].use_key(key)

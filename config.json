@@ -1,77 +1,77 @@
 {
-  "key_codes" : {
-    "KEY_UP" : [
+  "key_codes": {
+    "KEY_UP": [
       259,
       547,
       337
     ],
-    "KEY_DOWN" : [
+    "KEY_DOWN": [
       258,
       548,
       336
     ],
-    "KEY_RIGHT" : [
+    "KEY_RIGHT": [
       261,
       400,
       402
     ],
-    "KEY_LEFT" : [
+    "KEY_LEFT": [
       260,
       391,
       393
     ],
-    "KEY_END" : [
+    "KEY_END": [
       358,
       384,
       360,
       386
     ],
-    "KEY_HOME" : [
+    "KEY_HOME": [
       262,
       388,
       391
     ],
-    "KEY_CTL_RIGHT" : [
+    "KEY_CTL_RIGHT": [
       444,
       560,
       561
     ],
-    "KEY_CTL_LEFT" : [
+    "KEY_CTL_LEFT": [
       443,
       545,
       546
     ],
-    "KEY_CTL_C" : [
+    "KEY_CTL_C": [
       3
     ],
-    "KEY_CTL_V" : [
+    "KEY_CTL_V": [
       22
     ],
-    "KEY_CTL_S" : [
+    "KEY_CTL_S": [
       19
     ],
-    "KEY_CTL_Q" : [
+    "KEY_CTL_Q": [
       17
     ],
-    "KEY_CTL_E" : [
+    "KEY_CTL_E": [
       5
     ],
-    "KEY_CTL_TAB" : [
+    "KEY_CTL_TAB": [
       482
     ],
-    "KEY_ENTER" : [
+    "KEY_ENTER": [
       10,
       343
     ],
-    "KEY_BACKSPACE" : [
+    "KEY_BACKSPACE": [
       8,
       263
     ],
-    "KEY_CTL_BACKSPACE" : [
+    "KEY_CTL_BACKSPACE": [
       127
     ]
   },
-  "s_key_codes" : [
+  "s_key_codes": [
     547,
     548,
     3,

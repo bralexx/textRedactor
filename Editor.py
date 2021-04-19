@@ -117,16 +117,17 @@ class Editor:
             self.cursor.y += 1
             self.cursor.y = min(self.cursor.y, len(self.content) - 1)
             self.cursor.x = min(self.cursor.x, len(self.content[self.cursor.y]))
-        elif key in self.config['key_codes']['KEY_RIGHT'] :
+        elif key in self.config['key_codes']['KEY_RIGHT']:
             self.keyRight()
-        elif key in self.config['key_codes']['KEY_LEFT'] :
+        elif key in self.config['key_codes']['KEY_LEFT']:
             self.keyLeft()
         elif key in self.config['key_codes']['KEY_END']:
             self.cursor.x = len(self.content[self.cursor.y])
         elif key in self.config['key_codes']['KEY_HOME']:
             self.cursor.x = 0
         elif key in self.config['key_codes']['KEY_CTL_RIGHT']:
-            while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][self.cursor.x] == ' ':
+            while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
+                self.cursor.x] == ' ':
                 self.cursor.x += 1
             self.keyRight()
             while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
@@ -153,7 +154,7 @@ class Editor:
                 pyperclip.copy(s)
         elif key in self.config['key_codes']['KEY_CTL_V']:
             self.paste((str(pyperclip.paste())).split('\n'))
-        elif key in self.config['key_codes']['KEY_CTL_V']:
+        elif key in self.config['key_codes']['KEY_CTL_S']:
             file = open(self.path, 'w')
             for s in self.content:
                 file.write(s)
@@ -180,7 +181,8 @@ class Editor:
         elif key in range(32, 127):
             if self.cursor == self.selection:
                 self.content[self.cursor.y] = self.content[self.cursor.y][0:self.cursor.x] + chr(key) + \
-                                              self.content[self.cursor.y][self.cursor.x:len(self.content[self.cursor.y])]
+                                              self.content[self.cursor.y][
+                                              self.cursor.x:len(self.content[self.cursor.y])]
                 self.cursor.x += 1
             else:
                 self.paste([str(chr(key))])
