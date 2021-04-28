@@ -108,8 +108,48 @@ class Editor:
             self.cursor.x = max(self.cursor.x, 0)
             self.selection.y, self.selection.x = self.cursor.y, self.cursor.x
 
-    def use_key(self, key):
+    def ctl_right(self):
+        while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
+            self.cursor.x] == ' ':
+            self.cursor.x += 1
+        self.keyRight()
+        while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
+            self.cursor.x] != ' ':
+            self.keyRight()
 
+    def ctl_left(self):
+        while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] == ' ':
+            self.keyLeft()
+        self.keyLeft()
+        while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] != ' ':
+            self.keyLeft()
+
+    def copy(self):
+        if self.cursor.y == self.selection.y:
+            if self.cursor.x == self.selection.x:
+                return
+            else:
+                pyperclip.copy(
+                    self.content[self.cursor.y][
+                    min(self.selection.x, self.cursor.x):max(self.selection.x, self.cursor.x)])
+        else:
+            start, end = min(self.selection, self.cursor), max(self.selection, self.cursor)
+            s = '\n'.join([self.content[start.y][start.x:len(self.content[start.y])],
+                           '\n'.join(self.content[start.y + 1:end.y]), self.content[end.y][0:end.x]])
+            pyperclip.copy(s)
+
+    def print(self, key):
+        if self.cursor == self.selection:
+            self.content[self.cursor.y] = self.content[self.cursor.y][0:self.cursor.x] + chr(key) + \
+                                          self.content[self.cursor.y][
+                                          self.cursor.x:len(self.content[self.cursor.y])]
+            self.cursor.x += 1
+        else:
+            self.paste([str(chr(key))])
+        self.selection.y, self.selection.x = self.cursor.y, self.cursor.x
+
+    def use_key(self, key_code):
+        key = curses.keyname(key_code).decode()
         if key in self.config['key_codes']['KEY_UP']:
             self.cursor.y -= 1
             self.cursor = Cursor(max(self.cursor.y, 0), min(self.cursor.x, len(self.content[self.cursor.y])))
@@ -126,32 +166,11 @@ class Editor:
         elif key in self.config['key_codes']['KEY_HOME']:
             self.cursor.x = 0
         elif key in self.config['key_codes']['KEY_CTL_RIGHT']:
-            while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
-                self.cursor.x] == ' ':
-                self.cursor.x += 1
-            self.keyRight()
-            while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
-                self.cursor.x] != ' ':
-                self.keyRight()
+            self.ctl_right()
         elif key in self.config['key_codes']['KEY_CTL_LEFT']:
-            while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] == ' ':
-                self.keyLeft()
-            self.keyLeft()
-            while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] != ' ':
-                self.keyLeft()
+            self.ctl_left()
         elif key in self.config['key_codes']['KEY_CTL_C']:
-            if self.cursor.y == self.selection.y:
-                if self.cursor.x == self.selection.x:
-                    return
-                else:
-                    pyperclip.copy(
-                        self.content[self.cursor.y][
-                        min(self.selection.x, self.cursor.x):max(self.selection.x, self.cursor.x)])
-            else:
-                start, end = min(self.selection, self.cursor), max(self.selection, self.cursor)
-                s = '\n'.join([self.content[start.y][start.x:len(self.content[start.y])],
-                               '\n'.join(self.content[start.y + 1:end.y]), self.content[end.y][0:end.x]])
-                pyperclip.copy(s)
+            self.copy()
         elif key in self.config['key_codes']['KEY_CTL_V']:
             self.paste((str(pyperclip.paste())).split('\n'))
         elif key in self.config['key_codes']['KEY_CTL_S']:
@@ -178,15 +197,7 @@ class Editor:
             self.backspace()
         elif key in range(curses.KEY_F0, curses.KEY_F12):  # F1 - F12
             return
-        elif key in range(32, 127):
-            if self.cursor == self.selection:
-                self.content[self.cursor.y] = self.content[self.cursor.y][0:self.cursor.x] + chr(key) + \
-                                              self.content[self.cursor.y][
-                                              self.cursor.x:len(self.content[self.cursor.y])]
-                self.cursor.x += 1
-            else:
-                self.paste([str(chr(key))])
-            self.selection.y, self.selection.x = self.cursor.y, self.cursor.x
-
+        elif key_code in range(32, 127):
+            self.print(key_code)
         if not key in self.config['s_key_codes']:
             self.selection.y, self.selection.x = self.cursor.y, self.cursor.x

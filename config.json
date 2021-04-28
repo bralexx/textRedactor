@@ -1,77 +1,110 @@
 {
   "key_codes": {
     "KEY_UP": [
+      "KEY_UP",
+      "KEY_SUP",
       259,
       547,
       337
     ],
     "KEY_DOWN": [
+      "KEY_DOWN",
+      "KEY_SDOWN",
       258,
       548,
       336
     ],
     "KEY_RIGHT": [
+      "KEY_RIGHT",
+      "KEY_SRIGHT",
       261,
       400,
       402
     ],
     "KEY_LEFT": [
+      "KEY_LEFT",
+      "KEY_SLEFT",
       260,
       391,
       393
     ],
     "KEY_END": [
+      "KEY_END",
+      "KEY_SEND",
       358,
       384,
       360,
       386
     ],
     "KEY_HOME": [
+      "KEY_HOME",
+      "KEY_SHOME",
       262,
       388,
       391
     ],
     "KEY_CTL_RIGHT": [
+      "CTL_RIGHT",
+      "CTL_SRIGHT",
       444,
       560,
       561
     ],
     "KEY_CTL_LEFT": [
+      "CTL_LEFT",
+      "CTL_SLEFT",
       443,
       545,
       546
     ],
     "KEY_CTL_C": [
+      "^C",
       3
     ],
     "KEY_CTL_V": [
+      "^V",
       22
     ],
     "KEY_CTL_S": [
+      "^S",
       19
     ],
     "KEY_CTL_Q": [
+      "^Q",
       17
     ],
     "KEY_CTL_E": [
+      "^E",
       5
     ],
     "KEY_CTL_TAB": [
+      "CTL_TAB",
       482
     ],
     "KEY_ENTER": [
+      "^J",
       10,
       343
     ],
     "KEY_BACKSPACE": [
+      "^H",
       8,
       263
     ],
     "KEY_CTL_BACKSPACE": [
+      "^?",
       127
     ]
   },
   "s_key_codes": [
+    "KEY_SUP",
+    "KEY_SDOWN",
+    "KEY_SRIGHT",
+    "KEY_SLEFT",
+    "KEY_SEND",
+    "KEY_SHOME",
+    "CTL_SRIGHT",
+    "CTL_SLEFT",
     547,
     548,
     3,
