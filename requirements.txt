@@ -1,2 +1,3 @@
-curses~=2.2.1+utf8
-pyperclip~=1.8.2
+curses @ file:///C:/Users/alex/PycharmProjects/textRedactor/curses-2.2.1%2Butf8-cp39-cp39-win_amd64.whl
+curses-menu==0.5.0
+pyperclip==1.8.2
