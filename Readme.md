@@ -18,7 +18,14 @@
     python main.py <path1> <path2> ... <pathn>
     просто python main.py откроет file
 
-Хоткеи для работы указаны внизу самого редактора
+#Хоткеи
+<kbd>Ctrl</kbd> + <kbd>E</kbd> - выйти из редактора
+
+<kbd>Ctrl</kbd> + <kbd>Q</kbd> - закрыть текущий файл
+
+<kbd>Ctrl</kbd> + <kbd>S</kbd> - сохранить изменения
+
+<kbd>Ctrl</kbd> + <kbd>Tab</kbd> - следующий файл
 
 ## Изменения после 1 итерации
 

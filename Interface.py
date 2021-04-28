@@ -38,9 +38,9 @@ class Interface:
             if len(menu_line) + len(s1) + len(self.path[self.num_of_editor]) < max_x:
                 scr.addstr(0, len(menu_line) + len(s1) + len(self.path[self.num_of_editor]), s2)
 
-        # scr.addstr(max_y - 1, 0,
-        #            "Ctrl+E Exit | Ctrl+S Save | Ctrl+Q Close current file | Ctrl+Tab change current file |",
-        #            curses.A_BOLD)
+        scr.addstr(max_y - 1, 0,
+                   "Ctrl+E Exit | Ctrl+S Save | Ctrl+Q Close current file | Ctrl+Tab change current file |",
+                   curses.A_BOLD)
         status_bar_cursor = "Position: {}:{}".format(str(cursor.x), str(cursor.y))
         scr.addstr(max_y - 1, max_x - len(status_bar_cursor) - 1, status_bar_cursor, curses.A_BOLD)
 
@@ -74,8 +74,8 @@ class Interface:
             curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_WHITE)
 
             self.render_menu_lines(scr, max_y, max_x, cursor)
-            scr.addstr(max_y - 1, 0, "Last pressed key: {} {}".format(str(key), str(curses.keyname(key))),
-                       curses.A_BOLD)
+            # scr.addstr(max_y - 1, 0, "Last pressed key: {} {}".format(str(key), str(curses.keyname(key))),
+            #            curses.A_BOLD)
 
             pad_render = Cursor(min(cursor.x, pad_render.x), min(cursor.y, pad_render.y))
             pad_render = Cursor(max(cursor.x - max_x + 1, pad_render.x), max(cursor.y - max_y + 3, pad_render.y))
