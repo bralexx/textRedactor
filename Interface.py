@@ -19,6 +19,7 @@ class Interface:
             self.editors.append(Editor(str(path_)))
 
     def render_menu_lines(self, scr, max_y, max_x, cursor):
+        """Method adds top and down menu lines"""
         menu_line = "{} files opened | ".format(len(self.editors))
         scr.addstr(0, 0, menu_line, curses.A_BOLD)
 
@@ -44,6 +45,7 @@ class Interface:
         scr.addstr(max_y - 1, max_x - len(status_bar_cursor) - 1, status_bar_cursor, curses.A_BOLD)
 
     def use_key(self, key):
+        """If key is menu key code then make changes else call editor use_key function"""
         if key in self.config['key_codes']['KEY_CTL_TAB']:
             self.num_of_editor += 1
             self.num_of_editor %= len(self.editors)
@@ -58,6 +60,7 @@ class Interface:
             self.editors[self.num_of_editor].use_key(key)
 
     def draw(self, scr):
+        """Draws redactor"""
         pad_render = Cursor(0, 0)
         key = 0
         while key not in self.config['key_codes']['KEY_CTL_E']:

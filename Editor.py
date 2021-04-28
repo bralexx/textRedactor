@@ -27,6 +27,7 @@ class Editor:
         self.pad_width = max_str_len
 
     def render_pad(self):
+        """Returns pad for redactor draw function"""
         pad = curses.newpad(len(self.content), self.pad_width)
         cursor = self.cursor
         selection = self.selection
