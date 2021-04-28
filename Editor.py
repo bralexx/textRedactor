@@ -56,7 +56,7 @@ class Editor:
     def get_cursor(self):
         return self.cursor
 
-    def keyRight(self):
+    def key_right(self):
         if self.cursor.y == len(self.content) - 1 and self.cursor.x == len(self.content[self.cursor.y]):
             return
         if not self.cursor.y == len(self.content) - 1 and self.cursor.x == len(self.content[self.cursor.y]):
@@ -66,7 +66,7 @@ class Editor:
             self.cursor.x += 1
             self.cursor.x = min(self.cursor.x, len(self.content[self.cursor.y]))
 
-    def keyLeft(self):
+    def key_left(self):
         if not self.cursor.y == 0 and self.cursor.x == 0:
             self.cursor.y -= 1
             self.cursor.x = len(self.content[self.cursor.y])
@@ -112,17 +112,17 @@ class Editor:
         while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
             self.cursor.x] == ' ':
             self.cursor.x += 1
-        self.keyRight()
+        self.key_right()
         while self.cursor.x < len(self.content[self.cursor.y]) and self.content[self.cursor.y][
             self.cursor.x] != ' ':
-            self.keyRight()
+            self.key_right()
 
     def ctl_left(self):
         while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] == ' ':
-            self.keyLeft()
-        self.keyLeft()
+            self.key_left()
+        self.key_left()
         while self.cursor.x > 0 and self.content[self.cursor.y][self.cursor.x - 1] != ' ':
-            self.keyLeft()
+            self.key_left()
 
     def copy(self):
         if self.cursor.y == self.selection.y:
@@ -158,9 +158,9 @@ class Editor:
             self.cursor.y = min(self.cursor.y, len(self.content) - 1)
             self.cursor.x = min(self.cursor.x, len(self.content[self.cursor.y]))
         elif key in self.config['key_codes']['KEY_RIGHT']:
-            self.keyRight()
+            self.key_right()
         elif key in self.config['key_codes']['KEY_LEFT']:
-            self.keyLeft()
+            self.key_left()
         elif key in self.config['key_codes']['KEY_END']:
             self.cursor.x = len(self.content[self.cursor.y])
         elif key in self.config['key_codes']['KEY_HOME']:
