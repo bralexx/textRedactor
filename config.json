@@ -1,0 +1,77 @@
+{
+  "key_codes": {
+    "KEY_UP": [
+      "KEY_UP",
+      "KEY_SUP"
+    ],
+    "KEY_DOWN": [
+      "KEY_DOWN",
+      "KEY_SDOWN"
+    ],
+    "KEY_RIGHT": [
+      "KEY_RIGHT",
+      "KEY_SRIGHT"
+    ],
+    "KEY_LEFT": [
+      "KEY_LEFT",
+      "KEY_SLEFT"
+    ],
+    "KEY_END": [
+      "KEY_END",
+      "KEY_SEND"
+    ],
+    "KEY_HOME": [
+      "KEY_HOME",
+      "KEY_SHOME"
+    ],
+    "KEY_CTL_RIGHT": [
+      "CTL_RIGHT",
+      "CTL_SRIGHT"
+    ],
+    "KEY_CTL_LEFT": [
+      "CTL_LEFT",
+      "CTL_SLEFT"
+    ],
+    "KEY_CTL_C": [
+      "^C"
+    ],
+    "KEY_CTL_V": [
+      "^V"
+    ],
+    "KEY_CTL_S": [
+      "^S",
+      19
+    ],
+    "KEY_CTL_Q": [
+      "^Q",
+      17
+    ],
+    "KEY_CTL_E": [
+      "^E",
+      5
+    ],
+    "KEY_CTL_TAB": [
+      "CTL_TAB",
+      482
+    ],
+    "KEY_ENTER": [
+      "^J"
+    ],
+    "KEY_BACKSPACE": [
+      "^H"
+    ],
+    "KEY_CTL_BACKSPACE": [
+      "^?"
+    ]
+  },
+  "s_key_codes": [
+    "KEY_SUP",
+    "KEY_SDOWN",
+    "KEY_SRIGHT",
+    "KEY_SLEFT",
+    "KEY_SEND",
+    "KEY_SHOME",
+    "CTL_SRIGHT",
+    "CTL_SLEFT"
+  ]
+}
